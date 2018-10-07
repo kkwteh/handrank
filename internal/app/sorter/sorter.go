@@ -2,6 +2,8 @@ package sorter
 
 import (
 	"math/rand"
+
+	"github.com/kkwteh/handrank/internal/app/evaluator"
 )
 
 type HoleCards struct {
@@ -120,6 +122,15 @@ func RandomRunout(boardCards []string, r *rand.Rand) map[string]bool {
 	perm := r.Perm(len(remainingCards))
 	for i := 0; i < cardsToDeal; i++ {
 		res[remainingCards[perm[i]]] = true
+	}
+	return res
+}
+
+func ClassifyHands(allHands []HoleCards, boardCards []string) []string {
+	res := make([]string, 0, len(allHands))
+	for i := 0; i < len(allHands); i++ {
+		fullHand := append(boardCards, (allHands[i].Cards[:])...)
+		res = append(res, evaluator.HandRank(evaluator.HandScore(fullHand)))
 	}
 	return res
 }

@@ -216,3 +216,64 @@ func prime_product_from_rankbits(rankbits uint32) uint32 {
 	}
 	return product
 }
+
+const maxStraightFlush = 10
+const maxFourOfAKind = 166
+const maxFullHouse = 322
+const maxFlush = 1599
+const maxStraight = 1609
+const maxThreeOfAKind = 2467
+const maxTwoPair = 3325
+const maxPair = 6185
+const maxHighCard = 7462
+
+// HandRank gives the hand class of the given hand
+func HandRank(score uint32) string {
+	if score >= 0 && score <= maxStraightFlush {
+		return "Straight Flush"
+	} else if score <= maxFourOfAKind {
+		return "Four Of A Kind"
+	} else if score <= maxFullHouse {
+		return "Full House"
+	} else if score <= maxFlush {
+		return "Flush"
+	} else if score <= maxStraight {
+		return "Straight"
+	} else if score <= maxThreeOfAKind {
+		return "Three Of A Kind"
+	} else if score <= maxTwoPair {
+		return "Two Pair"
+	} else if score <= maxPair {
+		return "Pair"
+	} else if score <= maxHighCard {
+		return "High Card"
+	} else {
+		panic(fmt.Sprintf("Unknown hand score %v", score))
+	}
+}
+
+// def get_rank_class(self, hr):
+//         """
+//         Returns the class of hand given the hand hand_rank
+//         returned from evaluate.
+//         """
+//         if hr >= 0 and hr <= LookupTable.MAX_STRAIGHT_FLUSH:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_STRAIGHT_FLUSH]
+//         elif hr <= LookupTable.MAX_FOUR_OF_A_KIND:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_FOUR_OF_A_KIND]
+//         elif hr <= LookupTable.MAX_FULL_HOUSE:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_FULL_HOUSE]
+//         elif hr <= LookupTable.MAX_FLUSH:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_FLUSH]
+//         elif hr <= LookupTable.MAX_STRAIGHT:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_STRAIGHT]
+//         elif hr <= LookupTable.MAX_THREE_OF_A_KIND:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_THREE_OF_A_KIND]
+//         elif hr <= LookupTable.MAX_TWO_PAIR:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_TWO_PAIR]
+//         elif hr <= LookupTable.MAX_PAIR:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_PAIR]
+//         elif hr <= LookupTable.MAX_HIGH_CARD:
+//             return LookupTable.MAX_TO_RANK_CLASS[LookupTable.MAX_HIGH_CARD]
+//         else:
+//             raise Exception("Inavlid hand rank, cannot return rank class")

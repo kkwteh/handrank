@@ -113,8 +113,8 @@ func RandomRunout(boardCards []string, r *rand.Rand) map[string]bool {
 //ClassifyHands returns a list of hand rankings corresponding to the list of allhands
 func ClassifyHands(allHands []HoleCards, boardCards []string) []string {
 	res := make([]string, 0, len(allHands))
-	for i := 0; i < len(allHands); i++ {
-		fullHand := append(boardCards, (allHands[i][:])...)
+	for _, hand := range allHands {
+		fullHand := append(boardCards, (hand[:])...)
 		res = append(res, evaluator.HandRank(evaluator.HandScore(fullHand)))
 	}
 	return res

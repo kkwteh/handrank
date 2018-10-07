@@ -8,16 +8,17 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/kkwteh/handrank/internal/app/sorter"
 )
 
 type SortRequest struct {
-	BoardCards []string    `json:"board_cards"`
-	AllHands   [][2]string `json:"all_hands"`
+	BoardCards []string           `json:"board_cards"`
+	AllHands   []sorter.HoleCards `json:"all_hands"`
 }
 
 type SortResponse struct {
-	AllHands    [][2]string `json:"all_hands"`
-	HandClasses []string    `json:"hand_classes"`
+	AllHands    []sorter.HoleCards `json:"all_hands"`
+	HandClasses []string           `json:"hand_classes"`
 }
 
 func main() {
@@ -40,21 +41,16 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 func sortHandler(w http.ResponseWriter, r *http.Request) {
 	sortRequest := SortRequest{
 		BoardCards: make([]string, 0),
-		AllHands:   make([][2]string, 0),
+		AllHands:   make([]sorter.HoleCards, 0),
 	}
 	err := json.NewDecoder(r.Body).Decode(&sortRequest)
 	if err != nil {
 		panic(err)
 	}
-	sortResponse := SortResponse{
-		AllHands:    make([][2]string, 0),
-		HandClasses: make([]string, 0),
-	}
+	sortResponse := SortResponse{}
 
-	for _, hand := range sortRequest.AllHands {
-		sortResponse.AllHands = append(sortResponse.AllHands, hand)
-		sortResponse.HandClasses = append(sortResponse.HandClasses, "Pair")
-	}
+	sortResponse.AllHands = sorter.SortRange(sortRequest.AllHands, sortRequest.BoardCards)
+	sortResponse.HandClasses = sorter.ClassifyHands(sortResponse.AllHands, sortRequest.BoardCards)
 
 	responseJSON, err := json.Marshal(sortResponse)
 	if err != nil {

@@ -19,7 +19,7 @@ type ScoredHoleCards struct {
 type ScoredRange []ScoredHoleCards
 
 // sign flip because lower scores correspond to stronger hands.
-func (sr ScoredRange) Less(i, j int) bool { return sr[i].Score > sr[j].Score }
+func (sr ScoredRange) Less(i, j int) bool { return sr[i].Score < sr[j].Score }
 func (sr ScoredRange) Len() int           { return len(sr) }
 func (sr ScoredRange) Swap(i, j int)      { sr[i], sr[j] = sr[j], sr[i] }
 
@@ -38,15 +38,18 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	for i := 0; i < len(handRange); i++ {
 		handRanks[handRange[i]] = make([]int, 0, numRunsToSort)
 	}
-	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 	for i := 0; i < numRunsToSort; i++ {
-		runout := RandomRunout(boardCards, r)
+		runout := RandomRunout(boardCards)
 		unexcludedRange := UnexcludedRange(handRange, runout)
 		scoredRange := ScoreHoleCards(unexcludedRange, boardCards, runout)
-		sort.Sort(scoredRange)
+		sort.Sort(sort.Reverse(scoredRange))
 		for j, shc := range scoredRange {
 			handRanks[shc.Cards] = append(handRanks[shc.Cards], j)
 		}
+	}
+
+	for _, ranks := range handRanks {
+		sort.Ints(ranks)
 	}
 
 	finalScoredRange := make(ScoredRange, 0, len(handRange))
@@ -55,7 +58,7 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 		score := handRanks[hand][int(math.Floor(0.7*numRanks))]
 		finalScoredRange = append(finalScoredRange, ScoredHoleCards{Cards: hand, Score: uint32(score)})
 	}
-	sort.Sort(sort.Reverse(finalScoredRange))
+	sort.Sort(finalScoredRange)
 
 	res := make([]HoleCards, 0, len(handRange))
 	for _, scoredHand := range finalScoredRange {
@@ -113,7 +116,8 @@ func FullDeck() map[string]bool {
 }
 
 // RandomRunout returns a random runout
-func RandomRunout(boardCards []string, r *rand.Rand) map[string]bool {
+func RandomRunout(boardCards []string) map[string]bool {
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 	fullDeck := FullDeck()
 	for _, card := range boardCards {
 		fullDeck[card] = false

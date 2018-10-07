@@ -1,10 +1,11 @@
 package sorter_test
 
 import (
-	"math/rand"
+	"encoding/json"
+	"fmt"
 	"sort"
+	"strings"
 	"testing"
-	"time"
 
 	"github.com/kkwteh/handrank/internal/app/sorter"
 )
@@ -25,6 +26,38 @@ func TestSortRange(t *testing.T) {
 		t.Errorf("Got %v for res2", res2)
 	}
 }
+
+type SortRequest struct {
+	BoardCards []string           `json:"board_cards"`
+	AllHands   []sorter.HoleCards `json:"all_hands"`
+}
+
+type SortResponse struct {
+	AllHands    []sorter.HoleCards `json:"all_hands"`
+	HandClasses []string           `json:"hand_classes"`
+}
+
+func TestSortRangeRedux(t *testing.T) {
+	requestJson := strings.NewReader(`{"board_cards":["Jc","Qd","3h"],"all_hands":[["5s", "5c"], ["3s", "3c"], ["As", "Ac"], ["4s", "4c"]]}`)
+	sortRequest := SortRequest{}
+	json.NewDecoder(requestJson).Decode(&sortRequest)
+	sortResponse := SortResponse{}
+	sortResponse.AllHands = sorter.SortRange(sortRequest.AllHands, sortRequest.BoardCards)
+	sortResponse.HandClasses = sorter.ClassifyHands(sortResponse.AllHands, sortRequest.BoardCards)
+	if fmt.Sprintf("%v", sortResponse.AllHands) != "[[4s 4c] [5s 5c] [As Ac] [3s 3c]]" {
+		t.Errorf("Got %v", sortResponse.AllHands)
+	}
+}
+
+// func TestSortRangeTrifecta(t *testing.T) {
+// 	requestJson := strings.NewReader(`{ "board_cards": ["3d", "4d", "Th"], "all_hands": [ ["Ad", "As"], ["Ah", "As"], ["Ah", "Ad"], ["Ac", "As"], ["Ac", "Ad"], ["Ac", "Ah"] ] }`)
+// 	sortRequest := SortRequest{}
+// 	json.NewDecoder(requestJson).Decode(&sortRequest)
+// 	sortResponse := SortResponse{}
+// 	sortResponse.AllHands = sorter.SortRange(sortRequest.AllHands, sortRequest.BoardCards)
+// 	sortResponse.HandClasses = sorter.ClassifyHands(sortResponse.AllHands, sortRequest.BoardCards)
+// 	t.Errorf("Got %v", sortResponse.AllHands)
+// }
 
 func TestSortFullDeck(t *testing.T) {
 	allHoleCards := make([]sorter.HoleCards, 0, len(sorter.FullDeck())*len(sorter.FullDeck()))
@@ -70,13 +103,22 @@ func TestFullDeck(t *testing.T) {
 }
 
 func TestRandomRunout(t *testing.T) {
-	s := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(s)
-	res := sorter.RandomRunout([]string{"Ac", "Ad"}, r)
+	res := sorter.RandomRunout([]string{"Ac", "Ad"})
 	if len(res) != 3 {
 		t.Errorf("runout was wrong length. Expected 3, got %v", len(res))
 	}
 }
+
+// func TestManyRunouts(t *testing.T) {
+// 	res := make([]string, 0, 50)
+// 	for i := 0; i < 100; i++ {
+// 		runout := sorter.RandomRunout([]string{"Ac", "Ad", "Ah"})
+// 		for card, _ := range runout {
+// 			res = append(res, card)
+// 		}
+// 	}
+// 	t.Errorf("got %v", res)
+// }
 
 func TestScoreHoleCards(t *testing.T) {
 	suitedConnectors := sorter.HoleCards{"5h", "6h"}
@@ -133,7 +175,7 @@ func TestClassifyHands(t *testing.T) {
 		t.Errorf("Got %v", len(res))
 	}
 
-	if res[0] != "Three Of A Kind" {
+	if res[0] != "Three of a Kind" {
 		t.Errorf("Got %v", res)
 	}
 }

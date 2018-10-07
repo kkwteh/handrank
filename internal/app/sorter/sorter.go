@@ -4,21 +4,42 @@ import (
 	"math/rand"
 
 	"github.com/kkwteh/joker/hand"
-	"github.com/kkwteh/joker/jokertest"
 )
 
-// Full deck of 52 cards
+// def sort_range(hand_range, board_cards):
+//     if len(hand_range) == 0:
+//         return []
+
+// 		num_runs_to_sort = min(round(10000 / len(hand_range)), 100)
+
+// func SortRange(handRange [][]hand.Card, boardCards []hand.Card) [][]hand.Card {
+// 	if len(handRange) == 0 {
+// 		return [][]hand.Card{}
+// 	}
+
+// 	handRanks := make(map[]hand.Card{})
+
+// 	numRunsToSort := math.Min(math.Round(10000.0/float64(len(handRange))), 100)
+// 	_ = boardCards
+// 	res := handRange
+// 	return res
+// }
+
+// HoleCards type implements sort interface
+type HoleCards struct {
+	Cards []hand.Card
+}
+
+func (hc HoleCards) Len() int           { return len(hc.Cards) }
+func (hc HoleCards) Swap(i, j int)      { hc.Cards[i], hc.Cards[j] = hc.Cards[j], hc.Cards[i] }
+func (hc HoleCards) Less(i, j int) bool { return int(hc.Cards[i]) < int(hc.Cards[j]) }
+
+// FullDeck of 52 cards
 func FullDeck() map[hand.Card]bool {
 	res := make(map[hand.Card]bool)
 	for i := 0; i < 52; i++ {
 		res[hand.Card(i)] = true
 	}
-	return res
-}
-
-// Foo is a test func
-func Foo() *hand.Hand {
-	res := hand.New(jokertest.Cards("Ks", "Qs", "Ac", "2s", "3c"))
 	return res
 }
 

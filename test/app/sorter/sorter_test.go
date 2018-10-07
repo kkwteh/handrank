@@ -2,6 +2,7 @@ package sorter_test
 
 import (
 	"math/rand"
+	"sort"
 	"testing"
 	"time"
 
@@ -9,10 +10,6 @@ import (
 	"github.com/kkwteh/joker/hand"
 	"github.com/kkwteh/joker/jokertest"
 )
-
-func TestSorter(t *testing.T) {
-	_ = sorter.Foo()
-}
 
 func TestRankingHigh(t *testing.T) {
 	handResult := hand.New(jokertest.Cards("Ks", "Qs", "Ac", "2s", "3c"))
@@ -57,6 +54,14 @@ func TestCardString(t *testing.T) {
 	}
 }
 
+func TestCardOrder(t *testing.T) {
+	holeCards := sorter.HoleCards{Cards: []hand.Card{hand.Card(51), hand.Card(0)}}
+	sort.Sort(holeCards)
+	if holeCards.Cards[0] != hand.Card(0) {
+		t.Errorf("Got unexpected hole cards sort order")
+	}
+}
+
 func TestRandomRunout(t *testing.T) {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
@@ -67,7 +72,6 @@ func TestRandomRunout(t *testing.T) {
 }
 
 func TestClassifyHands(t *testing.T) {
-	// ClassifyHands(allHands [][]hand.Card, boardCards []hand.Card) []string {
 	res := sorter.ClassifyHands([][]hand.Card{
 		{hand.TwoSpades, hand.TwoHearts},
 		{hand.AceClubs, hand.KingClubs}},
@@ -80,10 +84,3 @@ func TestClassifyHands(t *testing.T) {
 		t.Errorf("Expected Flush, got %v", res[1])
 	}
 }
-
-// func TestCards(t *testing.T) {
-// 	handResult := sorter.Foo()
-// 	if handResult.Ranking() != hand.Ranking(1) {
-// 		t.Errorf("Sum was incorrect, got: %v, want: %v.", handResult.Ranking(), hand.Ranking(1))
-// 	}
-// }

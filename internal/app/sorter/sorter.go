@@ -7,8 +7,11 @@ import (
 	"github.com/kkwteh/handrank/internal/app/evaluator"
 )
 
-type HoleCards struct {
+type HoleCards [2]string
+
+type ScoredHoleCards struct {
 	Cards [2]string
+	Score uint32
 }
 
 func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
@@ -37,12 +40,13 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	return res
 }
 
+// ScoreHoleCards scores hole cards. Lower scores are better.
 func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) map[HoleCards]uint32 {
 	res := make(map[HoleCards]uint32)
 	for _, holeCards := range unexcludedRange {
 		fullHandCards := make([]string, len(boardCards))
 		copy(fullHandCards, boardCards)
-		fullHandCards = append(fullHandCards, holeCards.Cards[:]...)
+		fullHandCards = append(fullHandCards, holeCards[:]...)
 		for card := range runout {
 			fullHandCards = append(fullHandCards, card)
 		}
@@ -55,7 +59,7 @@ func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map
 func UnexcludedRange(handRange []HoleCards, runout map[string]bool) []HoleCards {
 	res := make([]HoleCards, 0, len(handRange))
 	for _, hand := range handRange {
-		if !runout[hand.Cards[0]] && !runout[hand.Cards[1]] {
+		if !runout[hand[0]] && !runout[hand[1]] {
 			res = append(res, hand)
 		}
 	}
@@ -110,22 +114,8 @@ func RandomRunout(boardCards []string, r *rand.Rand) map[string]bool {
 func ClassifyHands(allHands []HoleCards, boardCards []string) []string {
 	res := make([]string, 0, len(allHands))
 	for i := 0; i < len(allHands); i++ {
-		fullHand := append(boardCards, (allHands[i].Cards[:])...)
+		fullHand := append(boardCards, (allHands[i][:])...)
 		res = append(res, evaluator.HandRank(evaluator.HandScore(fullHand)))
 	}
 	return res
 }
-
-// func RiverValue(holeCards []string, boardCards []string, runout []string) {
-// 	allCards := append(append(holeCards, boardCards...), runout...)
-// 	resHand := hand.New(allCards)
-// }
-
-// Python code
-// def river_value(hole_cards, board_cards, runout):
-//     # fails if cards aren't distinct
-//     trey_hole_cards = [Card.new(s) for s in hole_cards]
-//     trey_board_cards = [Card.new(s) for s in board_cards]
-//     trey_runout = [Card.new(s) for s in runout]
-//     res = EVALUATOR.evaluate(trey_board_cards + trey_runout, trey_hole_cards)
-//     return EVALUATOR.evaluate(trey_board_cards + trey_runout, trey_hole_cards)

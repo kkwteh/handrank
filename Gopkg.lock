@@ -25,26 +25,12 @@
   revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
   version = "v1.6.2"
 
-[[projects]]
-  branch = "master"
-  digest = "1:a07d6513cafec2c6829a942c4d8b195d21996104e62c98db089c40c3cf5683d2"
-  name = "github.com/kkwteh/joker"
-  packages = [
-    "hand",
-    "jokertest",
-    "util",
-  ]
-  pruneopts = "UT"
-  revision = "335c743edf4405476ff6fddaf1fd1a715cc8243a"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/gorilla/handlers",
     "github.com/gorilla/mux",
-    "github.com/kkwteh/joker/hand",
-    "github.com/kkwteh/joker/jokertest",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

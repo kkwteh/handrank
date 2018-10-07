@@ -55,10 +55,24 @@ func TestCardString(t *testing.T) {
 }
 
 func TestCardOrder(t *testing.T) {
-	holeCards := sorter.HoleCards{Cards: []hand.Card{hand.Card(51), hand.Card(0)}}
+	holeCards := &sorter.HoleCards{Cards: [2]hand.Card{hand.Card(51), hand.Card(0)}}
 	sort.Sort(holeCards)
 	if holeCards.Cards[0] != hand.Card(0) {
 		t.Errorf("Got unexpected hole cards sort order")
+	}
+}
+
+func TestHoleCardsLen(t *testing.T) {
+	holeCards := &sorter.HoleCards{Cards: [2]hand.Card{hand.Card(51), hand.Card(0)}}
+	if holeCards.Len() != 2 {
+		t.Errorf("Expected 2, got %v", holeCards.Len())
+	}
+}
+
+func TestCardLess(t *testing.T) {
+	holeCards := &sorter.HoleCards{Cards: [2]hand.Card{hand.Card(51), hand.Card(0)}}
+	if holeCards.Less(0, 1) {
+		t.Errorf("Expected false, got %v", holeCards.Less(0, 1))
 	}
 }
 
@@ -72,9 +86,9 @@ func TestRandomRunout(t *testing.T) {
 }
 
 func TestClassifyHands(t *testing.T) {
-	res := sorter.ClassifyHands([][]hand.Card{
-		{hand.TwoSpades, hand.TwoHearts},
-		{hand.AceClubs, hand.KingClubs}},
+	pocketDeuces := sorter.HoleCards{Cards: [2]hand.Card{hand.TwoSpades, hand.TwoHearts}}
+	bigSlickSuited := sorter.HoleCards{Cards: [2]hand.Card{hand.AceClubs, hand.KingClubs}}
+	res := sorter.ClassifyHands([]sorter.HoleCards{pocketDeuces, bigSlickSuited},
 		[]hand.Card{hand.TwoClubs, hand.FourClubs, hand.SixClubs})
 	if res[0] != "ThreeOfAKind" {
 		t.Errorf("Expected ThreeOfAKind, got %v", res[0])

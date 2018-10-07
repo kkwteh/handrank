@@ -1,6 +1,7 @@
 package sorter
 
 import (
+	"math"
 	"math/rand"
 
 	"github.com/kkwteh/joker/hand"
@@ -12,27 +13,29 @@ import (
 
 // 		num_runs_to_sort = min(round(10000 / len(hand_range)), 100)
 
-// func SortRange(handRange [][]hand.Card, boardCards []hand.Card) [][]hand.Card {
-// 	if len(handRange) == 0 {
-// 		return [][]hand.Card{}
-// 	}
-
-// 	handRanks := make(map[]hand.Card{})
-
-// 	numRunsToSort := math.Min(math.Round(10000.0/float64(len(handRange))), 100)
-// 	_ = boardCards
-// 	res := handRange
-// 	return res
-// }
-
 // HoleCards type implements sort interface
 type HoleCards struct {
-	Cards []hand.Card
+	Cards [2]hand.Card
 }
 
-func (hc HoleCards) Len() int           { return len(hc.Cards) }
-func (hc HoleCards) Swap(i, j int)      { hc.Cards[i], hc.Cards[j] = hc.Cards[j], hc.Cards[i] }
-func (hc HoleCards) Less(i, j int) bool { return int(hc.Cards[i]) < int(hc.Cards[j]) }
+func (hc *HoleCards) Len() int           { return len(hc.Cards) }
+func (hc *HoleCards) Less(i, j int) bool { return int(hc.Cards[i]) < int(hc.Cards[j]) }
+func (hc *HoleCards) Swap(i, j int)      { hc.Cards[i], hc.Cards[j] = hc.Cards[j], hc.Cards[i] }
+
+func SortRange(handRange []HoleCards, boardCards []hand.Card) []HoleCards {
+	if len(handRange) == 0 {
+		return []HoleCards{}
+	}
+
+	handRanks := make(map[HoleCards][]int)
+
+	numRunsToSort := math.Min(math.Round(10000.0/float64(len(handRange))), 100)
+	_ = handRanks
+	_ = numRunsToSort
+	_ = boardCards
+	res := handRange
+	return res
+}
 
 // FullDeck of 52 cards
 func FullDeck() map[hand.Card]bool {
@@ -75,10 +78,10 @@ func RandomRunout(boardCards []hand.Card, r *rand.Rand) []hand.Card {
 //         res.append(EVALUATOR.class_to_string(EVALUATOR.get_rank_class(score)))
 // 		return res
 
-func ClassifyHands(allHands [][]hand.Card, boardCards []hand.Card) []string {
+func ClassifyHands(allHands []HoleCards, boardCards []hand.Card) []string {
 	res := make([]string, 0, len(allHands))
 	for i := 0; i < len(allHands); i++ {
-		fullHand := append(boardCards, allHands[i]...)
+		fullHand := append(boardCards, (allHands[i].Cards[:])...)
 		res = append(res, hand.New(fullHand).Ranking().String())
 	}
 	return res

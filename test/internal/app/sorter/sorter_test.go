@@ -23,3 +23,16 @@ func TestRandomRunout(t *testing.T) {
 		t.Errorf("runout was wrong length. Expected 3, got %v", len(res))
 	}
 }
+
+func TestClassifyHands(t *testing.T) {
+	allHands := []sorter.HoleCards{{Cards: [2]string{"Ac", "Ah"}}}
+	boardCards := []string{"Ad", "3c", "Qd", "7h", "6s"}
+	res := sorter.ClassifyHands(allHands, boardCards)
+	if len(res) != 1 {
+		t.Errorf("Got %v", len(res))
+	}
+
+	if res[0] != "Three Of A Kind" {
+		t.Errorf("Got %v", res)
+	}
+}

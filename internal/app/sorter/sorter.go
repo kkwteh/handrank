@@ -54,9 +54,9 @@ func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map
 //UnexcludedRange returns hole cards in handRange that are not contained in runout
 func UnexcludedRange(handRange []HoleCards, runout map[string]bool) []HoleCards {
 	res := make([]HoleCards, 0, len(handRange))
-	for i := 0; i < len(handRange); i++ {
-		if !runout[handRange[i].Cards[0]] && !runout[handRange[i].Cards[1]] {
-			res = append(res, handRange[i])
+	for _, hand := range handRange {
+		if !runout[hand.Cards[0]] && !runout[hand.Cards[1]] {
+			res = append(res, hand)
 		}
 	}
 	return res

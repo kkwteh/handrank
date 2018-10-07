@@ -35,6 +35,17 @@ func TestScoreHoleCards(t *testing.T) {
 	}
 }
 
+func TestUnexcludedRange(t *testing.T) {
+	suitedConnectors := sorter.HoleCards{Cards: [2]string{"5h", "6h"}}
+	bigSlick := sorter.HoleCards{Cards: [2]string{"Ac", "Kc"}}
+	handRange := []sorter.HoleCards{suitedConnectors, bigSlick}
+	runout := map[string]bool{"Kc": true}
+	res := sorter.UnexcludedRange(handRange, runout)
+	if len(res) != 1 && res[0] != suitedConnectors {
+		t.Errorf("Got %v", res)
+	}
+}
+
 func TestClassifyHands(t *testing.T) {
 	allHands := []sorter.HoleCards{{Cards: [2]string{"Ac", "Ah"}}}
 	boardCards := []string{"Ad", "3c", "Qd", "7h", "6s"}

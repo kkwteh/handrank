@@ -9,6 +9,22 @@ import (
 	"github.com/kkwteh/handrank/internal/app/sorter"
 )
 
+func TestSortRange(t *testing.T) {
+	suitedConnectors := sorter.HoleCards{"5h", "6h"}
+	bigSlick := sorter.HoleCards{"Ac", "Kc"}
+	handRange := []sorter.HoleCards{suitedConnectors, bigSlick}
+	bigSlickBoard := []string{"7c", "Ad", "Kd"}
+	suitedConnectorsBoard := []string{"5s", "6s", "7c"}
+	res := sorter.SortRange(handRange, bigSlickBoard)
+	if res[1] != bigSlick {
+		t.Errorf("Got %v for res", res)
+	}
+
+	res2 := sorter.SortRange(handRange, suitedConnectorsBoard)
+	if res2[1] != suitedConnectors {
+		t.Errorf("Got %v for res2", res2)
+	}
+}
 func TestFullDeck(t *testing.T) {
 	res := sorter.FullDeck()
 	if len(res) != 52 {

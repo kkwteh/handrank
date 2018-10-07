@@ -1,7 +1,9 @@
 package sorter
 
 import (
+	"math"
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/kkwteh/handrank/internal/app/evaluator"
@@ -10,7 +12,7 @@ import (
 type HoleCards [2]string
 
 type ScoredHoleCards struct {
-	Cards [2]string
+	Cards HoleCards
 	Score uint32
 }
 
@@ -21,6 +23,7 @@ func (sr ScoredRange) Less(i, j int) bool { return sr[i].Score > sr[j].Score }
 func (sr ScoredRange) Len() int           { return len(sr) }
 func (sr ScoredRange) Swap(i, j int)      { sr[i], sr[j] = sr[j], sr[i] }
 
+//Returns slice of hole cards sorted in ascending order by strength
 func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	if len(handRange) == 0 {
 		return []HoleCards{}
@@ -39,16 +42,30 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	for i := 0; i < numRunsToSort; i++ {
 		runout := RandomRunout(boardCards, r)
 		unexcludedRange := UnexcludedRange(handRange, runout)
-		scoredHoleCards := ScoreHoleCards(unexcludedRange, boardCards, runout)
-		_ = scoredHoleCards
+		scoredRange := ScoreHoleCards(unexcludedRange, boardCards, runout)
+		sort.Sort(scoredRange)
+		for j, shc := range scoredRange {
+			handRanks[shc.Cards] = append(handRanks[shc.Cards], j)
+		}
 	}
 
-	res := handRange
+	finalScoredRange := make(ScoredRange, 0, len(handRange))
+	for _, hand := range handRange {
+		numRanks := float64(len(handRanks[hand]))
+		score := handRanks[hand][int(math.Floor(0.7*numRanks))]
+		finalScoredRange = append(finalScoredRange, ScoredHoleCards{Cards: hand, Score: uint32(score)})
+	}
+	sort.Sort(sort.Reverse(finalScoredRange))
+
+	res := make([]HoleCards, 0, len(handRange))
+	for _, scoredHand := range finalScoredRange {
+		res = append(res, scoredHand.Cards)
+	}
 	return res
 }
 
 // ScoreHoleCards scores hole cards. Lower scores are better.
-func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) []ScoredHoleCards {
+func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) ScoredRange {
 	res := make([]ScoredHoleCards, 0, len(unexcludedRange))
 	for _, holeCards := range unexcludedRange {
 		fullHandCards := make([]string, len(boardCards))

@@ -61,27 +61,3 @@ func sortHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(responseJSON)
 }
-
-// {
-// 	"board_cards": ["3d", "4d", "Th"],
-// 	"all_hands": [
-// 		["Ad", "As"],
-// 		["Ah", "As"],
-// 		["Ah", "Ad"],
-// 		["Ac", "As"],
-// 		["Ac", "Ad"],
-// 		["Ac", "Ah"]
-// 	]
-// }
-
-// {
-// 	"all_hands": [
-// 		["Ah", "As"],
-// 		["Ah", "Ad"],
-// 		["7d", "6d"],
-// 		["Ac", "As"],
-// 		["Ac", "Ad"],
-// 		["Ac", "Ah"]
-// 	],
-// 	"hand_classes": ["Pair", "Pair", "High Card", "Pair", "Pair", "Pair"]
-// }

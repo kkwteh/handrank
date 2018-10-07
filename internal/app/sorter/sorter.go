@@ -23,6 +23,8 @@ func (sr ScoredRange) Less(i, j int) bool { return sr[i].Score < sr[j].Score }
 func (sr ScoredRange) Len() int           { return len(sr) }
 func (sr ScoredRange) Swap(i, j int)      { sr[i], sr[j] = sr[j], sr[i] }
 
+const numRunsToSort = 100
+
 //Returns slice of hole cards sorted in ascending order by strength
 func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	if len(handRange) == 0 {
@@ -31,7 +33,6 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 
 	// Set number runs as 100. Fix the number of computations if it runs slow.
 	// numRunsToSort := int(math.Min(math.Round(10000.0/float64(len(handRange))), 100))
-	numRunsToSort := 100
 
 	// handRanks contains the rankings of the hands for the random runouts that are played out belows
 	handRanks := make(map[HoleCards][]int)

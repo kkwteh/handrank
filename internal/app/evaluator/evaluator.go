@@ -232,7 +232,7 @@ func HandRank(score uint32) string {
 	if score >= 0 && score <= maxStraightFlush {
 		return "Straight Flush"
 	} else if score <= maxFourOfAKind {
-		return "Four Of A Kind"
+		return "Four of a Kind"
 	} else if score <= maxFullHouse {
 		return "Full House"
 	} else if score <= maxFlush {
@@ -240,7 +240,7 @@ func HandRank(score uint32) string {
 	} else if score <= maxStraight {
 		return "Straight"
 	} else if score <= maxThreeOfAKind {
-		return "Three Of A Kind"
+		return "Three of a Kind"
 	} else if score <= maxTwoPair {
 		return "Two Pair"
 	} else if score <= maxPair {

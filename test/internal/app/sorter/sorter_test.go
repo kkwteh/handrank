@@ -25,6 +25,43 @@ func TestSortRange(t *testing.T) {
 		t.Errorf("Got %v for res2", res2)
 	}
 }
+
+func TestSortFullDeck(t *testing.T) {
+	allHoleCards := make([]sorter.HoleCards, 0, len(sorter.FullDeck())*len(sorter.FullDeck()))
+	FullDeckList := []string{
+		"As", "Ah", "Ad", "Ac",
+		"Ks", "Kh", "Kd", "Kc",
+		"Qs", "Qh", "Qd", "Qc",
+		"Js", "Jh", "Jd", "Jc",
+		"Ts", "Th", "Td", "Tc",
+		"9s", "9h", "9d", "9c",
+		"8s", "8h", "8d", "8c",
+		"7s", "7h", "7d", "7c",
+		"6s", "6h", "6d", "6c",
+		"5s", "5h", "5d", "5c",
+		"4s", "4h", "4d", "4c",
+		"3s", "3h", "3d", "3c",
+		"2s", "2h", "2d", "2c",
+	}
+
+	boardCards := make(map[string]bool)
+	boardCards["As"] = true
+	boardCards["Ks"] = true
+	boardCards["Qs"] = true
+
+	for i, cardi := range FullDeckList {
+		for j, cardj := range FullDeckList {
+			if i < j && boardCards[cardi] == false && boardCards[cardj] == false {
+				allHoleCards = append(allHoleCards, sorter.HoleCards{cardi, cardj})
+			}
+		}
+	}
+	res := sorter.SortRange(allHoleCards, []string{"As", "Ks", "Qs"})
+	if len(res) != 1176 {
+		t.Errorf("Got %v", len(res))
+	}
+}
+
 func TestFullDeck(t *testing.T) {
 	res := sorter.FullDeck()
 	if len(res) != 52 {

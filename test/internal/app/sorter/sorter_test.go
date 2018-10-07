@@ -30,8 +30,13 @@ func TestScoreHoleCards(t *testing.T) {
 	boardCards := []string{"5c", "6c", "Ac"}
 	runout := map[string]bool{"Qd": true, "6d": true}
 	res := sorter.ScoreHoleCards(unexcludedRange, boardCards, runout)
-	if res[suitedConnectors] != 271 {
-		t.Errorf("Got %v", res[suitedConnectors])
+
+	if res[0].Score != 271 {
+		t.Errorf("Got %v", res)
+	}
+
+	if res[0].Cards != [2]string{"5h", "6h"} {
+		t.Errorf("Got %v", res)
 	}
 }
 

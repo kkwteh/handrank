@@ -41,8 +41,8 @@ func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 }
 
 // ScoreHoleCards scores hole cards. Lower scores are better.
-func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) map[HoleCards]uint32 {
-	res := make(map[HoleCards]uint32)
+func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) []ScoredHoleCards {
+	res := make([]ScoredHoleCards, 0, len(unexcludedRange))
 	for _, holeCards := range unexcludedRange {
 		fullHandCards := make([]string, len(boardCards))
 		copy(fullHandCards, boardCards)
@@ -50,7 +50,7 @@ func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map
 		for card := range runout {
 			fullHandCards = append(fullHandCards, card)
 		}
-		res[holeCards] = evaluator.HandScore(fullHandCards)
+		res = append(res, ScoredHoleCards{Cards: holeCards, Score: evaluator.HandScore(fullHandCards)})
 	}
 	return res
 }

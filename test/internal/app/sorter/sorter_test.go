@@ -2,6 +2,7 @@ package sorter_test
 
 import (
 	"math/rand"
+	"sort"
 	"testing"
 	"time"
 
@@ -37,6 +38,26 @@ func TestScoreHoleCards(t *testing.T) {
 
 	if res[0].Cards != [2]string{"5h", "6h"} {
 		t.Errorf("Got %v", res)
+	}
+}
+
+func TestSortScoredHoleCards(t *testing.T) {
+	handA := sorter.ScoredHoleCards{
+		Cards: sorter.HoleCards{"5h", "6h"},
+		Score: 162,
+	}
+	handB := sorter.ScoredHoleCards{
+		Cards: sorter.HoleCards{"7h", "2s"},
+		Score: 5000,
+	}
+	handC := sorter.ScoredHoleCards{
+		Cards: sorter.HoleCards{"Ac", "Kc"},
+		Score: 1,
+	}
+	handRange := sorter.ScoredRange{handA, handB, handC}
+	sort.Sort(handRange)
+	if handRange[0].Score != 5000 && handRange[1].Score != 162 && handRange[2].Score != 1 {
+		t.Errorf("Got%v", handRange)
 	}
 }
 

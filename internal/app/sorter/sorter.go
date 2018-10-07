@@ -14,6 +14,13 @@ type ScoredHoleCards struct {
 	Score uint32
 }
 
+type ScoredRange []ScoredHoleCards
+
+// sign flip because lower scores correspond to stronger hands.
+func (sr ScoredRange) Less(i, j int) bool { return sr[i].Score > sr[j].Score }
+func (sr ScoredRange) Len() int           { return len(sr) }
+func (sr ScoredRange) Swap(i, j int)      { sr[i], sr[j] = sr[j], sr[i] }
+
 func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
 	if len(handRange) == 0 {
 		return []HoleCards{}

@@ -2,6 +2,7 @@ package sorter
 
 import (
 	"math/rand"
+	"time"
 
 	"github.com/kkwteh/handrank/internal/app/evaluator"
 )
@@ -10,66 +11,45 @@ type HoleCards struct {
 	Cards [2]string
 }
 
-// func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
-// 	if len(handRange) == 0 {
-// 		return []HoleCards{}
-// 	}
+func SortRange(handRange []HoleCards, boardCards []string) []HoleCards {
+	if len(handRange) == 0 {
+		return []HoleCards{}
+	}
 
-// 	// Set number runs as 100. Fix the number of computations if it runs slow.
-// 	// numRunsToSort := int(math.Min(math.Round(10000.0/float64(len(handRange))), 100))
-// 	numRunsToSort := 100
+	// Set number runs as 100. Fix the number of computations if it runs slow.
+	// numRunsToSort := int(math.Min(math.Round(10000.0/float64(len(handRange))), 100))
+	numRunsToSort := 100
 
-// 	// handRanks contains the rankings of the hands for the random runouts that are played out belows
-// 	handRanks := make(map[HoleCards][]int)
-// 	for i := 0; i < len(handRange); i++ {
-// 		handRanks[handRange[i]] = make([]int, 0, numRunsToSort)
-// 	}
-// 	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
-// 	for i := 0; i < numRunsToSort; i++ {
-// 		runout := RandomRunout(boardCards, r)
-// 		unexcludedRange := UnexcludedRange(handRange, runout)
-// 		hands := BuildHands(unexcludedRange, boardCards, runout)
-// 		hands = hand.Sort(hand.SortingHigh, hand.ASC, hands...)
-// 	}
+	// handRanks contains the rankings of the hands for the random runouts that are played out belows
+	handRanks := make(map[HoleCards][]int)
+	for i := 0; i < len(handRange); i++ {
+		handRanks[handRange[i]] = make([]int, 0, numRunsToSort)
+	}
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	for i := 0; i < numRunsToSort; i++ {
+		runout := RandomRunout(boardCards, r)
+		unexcludedRange := UnexcludedRange(handRange, runout)
+		scoredHoleCards := ScoreHoleCards(unexcludedRange, boardCards, runout)
+		_ = scoredHoleCards
+	}
 
-// 	res := handRange
-// 	return res
-// }
+	res := handRange
+	return res
+}
 
-// func BuildHands(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) ([]*hand.Hand, map[string]HoleCards) {
-// 	hands := make([]*hand.Hand, 0, len(unexcludedRange))
-// 	origHoleCards := make(map[string]HoleCards)
-
-// 	for j := 0; j < len(unexcludedRange); j++ {
-// 		fullHandCards := make([]string, len(boardCards))
-// 		copy(fullHandCards, boardCards)
-// 		fullHandCards = append(fullHandCards, unexcludedRange[j].Cards[:]...)
-// 		for card := range runout {
-// 			fullHandCards = append(fullHandCards, card)
-// 		}
-
-// 		newHand := hand.New(fullHandCards)
-// 		[handLength]string(newstrings)
-// 		hands = append(hands, hand.New(fullHandCards))
-// 	}
-// 	return hands, origHoleCards
-// }
-
-// func New(cards []Card, options ...func(*Config)) *Hand {
-// 	c := &Config{}
-// 	for _, option := range options {
-// 		option(c)
-// 	}
-// 	combos := cardCombos(cards)
-// 	hands := []*Hand{}
-// 	for _, combo := range combos {
-// 		hand := handForFiveCards(combo, *c)
-// 		hands = append(hands, hand)
-// 	}
-// 	hands = Sort(c.sorting, DESC, hands...)
-// 	hands[0].config = c
-// 	return hands[0]
-// }
+func ScoreHoleCards(unexcludedRange []HoleCards, boardCards []string, runout map[string]bool) map[HoleCards]uint32 {
+	res := make(map[HoleCards]uint32)
+	for _, holeCards := range unexcludedRange {
+		fullHandCards := make([]string, len(boardCards))
+		copy(fullHandCards, boardCards)
+		fullHandCards = append(fullHandCards, holeCards.Cards[:]...)
+		for card := range runout {
+			fullHandCards = append(fullHandCards, card)
+		}
+		res[holeCards] = evaluator.HandScore(fullHandCards)
+	}
+	return res
+}
 
 //UnexcludedRange returns hole cards in handRange that are not contained in runout
 func UnexcludedRange(handRange []HoleCards, runout map[string]bool) []HoleCards {
@@ -126,6 +106,7 @@ func RandomRunout(boardCards []string, r *rand.Rand) map[string]bool {
 	return res
 }
 
+//ClassifyHands returns a list of hand rankings corresponding to the list of allhands
 func ClassifyHands(allHands []HoleCards, boardCards []string) []string {
 	res := make([]string, 0, len(allHands))
 	for i := 0; i < len(allHands); i++ {
@@ -135,21 +116,12 @@ func ClassifyHands(allHands []HoleCards, boardCards []string) []string {
 	return res
 }
 
-// Python code to classify hands
-// def classify_hands(all_hands, board_cards):
-//     res = []
-//     trey_board_cards = [Card.new(s) for s in board_cards]
-//     for hole_cards in all_hands:
-//         trey_hole_cards = [Card.new(s) for s in hole_cards]
-//         score = EVALUATOR.evaluate(trey_board_cards, trey_hole_cards)
-//         res.append(EVALUATOR.class_to_string(EVALUATOR.get_rank_class(score)))
-// 		return res
-
 // func RiverValue(holeCards []string, boardCards []string, runout []string) {
 // 	allCards := append(append(holeCards, boardCards...), runout...)
 // 	resHand := hand.New(allCards)
 // }
 
+// Python code
 // def river_value(hole_cards, board_cards, runout):
 //     # fails if cards aren't distinct
 //     trey_hole_cards = [Card.new(s) for s in hole_cards]

@@ -24,6 +24,17 @@ func TestRandomRunout(t *testing.T) {
 	}
 }
 
+func TestScoreHoleCards(t *testing.T) {
+	suitedConnectors := sorter.HoleCards{Cards: [2]string{"5h", "6h"}}
+	unexcludedRange := []sorter.HoleCards{suitedConnectors}
+	boardCards := []string{"5c", "6c", "Ac"}
+	runout := map[string]bool{"Qd": true, "6d": true}
+	res := sorter.ScoreHoleCards(unexcludedRange, boardCards, runout)
+	if res[suitedConnectors] != 271 {
+		t.Errorf("Got %v", res[suitedConnectors])
+	}
+}
+
 func TestClassifyHands(t *testing.T) {
 	allHands := []sorter.HoleCards{{Cards: [2]string{"Ac", "Ah"}}}
 	boardCards := []string{"Ad", "3c", "Qd", "7h", "6s"}

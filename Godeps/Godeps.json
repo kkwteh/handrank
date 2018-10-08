@@ -1,0 +1,20 @@
+{
+	"ImportPath": "github.com/kkwteh/handrank",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/gorilla/handlers",
+			"Comment": "v1.4.0-1-g7e0369f",
+			"Rev": "7e0369fae54b097612a946bc6709f3a3fbccb3de"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.6.2-9-g9e1f595",
+			"Rev": "9e1f5955c0d22b55d9e20d6faa28589f83b2faca"
+		}
+	]
+}
